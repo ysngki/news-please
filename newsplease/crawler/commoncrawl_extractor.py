@@ -17,9 +17,11 @@ from hurry.filesize import size
 from scrapy.utils.log import configure_logging
 from six.moves import urllib
 from warcio.archiveiterator import ArchiveIterator
-
+import requests
+import ssl
 from .. import NewsPlease, EmptyResponseError
 from . import commoncrawl_crawler
+from requests.exceptions import SSLError
 
 __author__ = "Felix Hamborg"
 __copyright__ = "Copyright 2017"
@@ -139,8 +141,13 @@ class CommonCrawlExtractor:
                     return False, article
                 if self.__filter_end_date and publishing_date > self.__filter_end_date:
                     return False, article
-
-        return True, article
+        # filter by language
+        if not article:
+            article = self._from_warc(warc_record)
+        if article.language != "en":
+            return False, article
+        else:
+            return True, article
 
     def __get_publishing_date(self, warc_record, article):
         """
@@ -207,7 +214,16 @@ class CommonCrawlExtractor:
             else:
                 url = self.__cc_base_url + path
                 self.__logger.info('downloading %s (local: %s)', url, local_filepath)
-                urllib.request.urlretrieve(url, local_filepath, reporthook=self.__on_download_progress_update)
+                # urllib.request.urlretrieve(url, local_filepath, reporthook=self.__on_download_progress_update)
+                while True:
+                    try:
+                        large_file = requests.get(url)
+                        break
+                    except SSLError as e:
+                        self.__logger.info("raise a SSLError. Retry!")
+                        continue
+                with open(local_filepath, 'wb') as f:
+                    f.write(large_file.content)
                 self.__logger.info('download completed, local file: %s', local_filepath)
                 return local_filepath
 

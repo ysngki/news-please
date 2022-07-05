@@ -30,6 +30,7 @@ import os
 import sys
 import datetime
 from datetime import date
+from datetime import datetime
 
 from ..crawler import commoncrawl_crawler as commoncrawl_crawler
 
@@ -46,16 +47,16 @@ my_local_download_dir_article = './cc_download_articles/'
 # hosts (if None or empty list, any host is OK)
 my_filter_valid_hosts = []  # example: ['elrancaguino.cl']
 # start date (if None, any date is OK as start date), as datetime
-my_filter_start_date = None  # datetime.datetime(2016, 1, 1)
+my_filter_start_date = datetime(2016, 9, 1)  # datetime.datetime(2016, 1, 1)
 # end date (if None, any date is OK as end date), as datetime
-my_filter_end_date = None  # datetime.datetime(2016, 12, 31)
+my_filter_end_date = datetime(2019, 3, 1)  # datetime.datetime(2016, 12, 31)
 # Only .warc files published within [my_warc_files_start_date, my_warc_files_end_date) will be downloaded.
 # Note that the date a warc file has been published does not imply it contains only news
 # articles from that date. Instead, you must assume that the warc file can contain articles
 # from ANY time before the warc file was published, e.g., a warc file published in August 2020
 # may contain news articles from December 2016.
-my_warc_files_start_date = None # example: datetime.datetime(2020, 3, 1)
-my_warc_files_end_date = None # example: datetime.datetime(2020, 3, 2)
+my_warc_files_start_date = datetime(2016, 9, 1) # example: datetime.datetime(2020, 3, 1)
+my_warc_files_end_date = datetime(2019, 3, 1) # example: datetime.datetime(2020, 3, 2)
 # if date filtering is strict and news-please could not detect the date of an article, the article will be discarded
 my_filter_strict_date = True
 # if True, the script checks whether a file has been downloaded already and uses that file instead of downloading
@@ -64,13 +65,13 @@ my_reuse_previously_downloaded_files = True
 # continue after error
 my_continue_after_error = True
 # show the progress of downloading the WARC files
-my_show_download_progress = False
+my_show_download_progress = True
 # log_level
-my_log_level = logging.INFO
+my_log_level = logging.DEBUG
 # json export style
 my_json_export_style = 1  # 0 (minimize), 1 (pretty)
 # number of extraction processes
-my_number_of_extraction_processes = 1
+my_number_of_extraction_processes = 8
 # if True, the WARC file will be deleted after all articles have been extracted from it
 my_delete_warc_after_extraction = True
 # if True, will continue extraction from the latest fully downloaded but not fully extracted WARC files and then
@@ -88,6 +89,12 @@ my_dry_run=False
 # logging
 logging.basicConfig(level=my_log_level)
 __logger = logging.getLogger(__name__)
+
+test_log = logging.FileHandler('test.log','a',encoding='utf-8')
+test_log.setLevel(my_log_level)
+formatter = logging.Formatter('%(asctime)s - %(filename)s - line:%(lineno)d - %(levelname)s - %(message)s -%(process)s')
+test_log.setFormatter(formatter)
+__logger.addHandler(test_log)
 
 
 def __setup__():

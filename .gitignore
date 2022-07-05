@@ -1,4 +1,5 @@
 *.pyc
+test.log
 
 # the download folder for any saved, crawled data (testing)
 data/
@@ -7,5 +8,6 @@ __pycache__/
 .idea/
 .DS_Store
 news-please.iml
-
+cc_download_warc/
+cc_download_articles/
 venv/
