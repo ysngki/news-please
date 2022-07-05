@@ -1,4 +1,6 @@
 # **news-please** #
+Run ``` python3 -m newsplease.examples.commoncrawl ``` for obtaining CCNews (used by RoBERTa).
+---
 
 [![PyPI version](https://img.shields.io/pypi/v/news-please.svg)](https://pypi.org/project/news-please/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4120316.svg)](http://dx.doi.org/10.5281/zenodo.4120316)
